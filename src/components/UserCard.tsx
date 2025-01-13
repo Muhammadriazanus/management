@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/db";
 import Image from "next/image";
 
 const UserCard = async ({
@@ -14,6 +14,8 @@ const UserCard = async ({
   };
 
   const data = await modelMap[type].count();
+  console.log("data=======?" ,data);
+  
 
   return (
     <div className="rounded-2xl odd:bg-lamaPurple even:bg-lamaYellow p-4 flex-1 min-w-[130px]">

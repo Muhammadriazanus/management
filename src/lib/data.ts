@@ -1,6 +1,77 @@
 // TEMPORARY DATA
 
+import { date } from "zod";
+
 export let role = "student";
+export const adminData = [
+  {
+    id: 1,
+    username: 'admin1',
+    email: 'admin1@example.com',
+    password: 'password123',
+    roles : "teacher",
+    createdAt: new Date()
+  },
+  {
+    id: 2,
+    username: 'anas',
+    email: 'anas@example.com',
+    password: 'password123',
+    roles : "admin",
+    createdAt: new Date()
+
+  },
+  {
+    id: 3,
+    username: 'abdullah',
+    email: 'abduallah@example.com',
+    password: 'password123',
+    roles : "parent",
+    name: 'Admin One',
+  }
+]
+export const allowedRoles = [
+  {
+    id: "1", // UUID or string ID
+    roleName: "admin", // Role name
+    adminId: "1", // Reference to an Admin
+    studentId: "1234567890", // No student assigned
+    teacherId: "1234567890", // No teacher assigned
+    parentId: "parentId1", // No parent assigned
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "2",
+    roleName: "teacher",
+    teacherId: "1234567890", // Reference to a Teacher
+    adminId: "3",
+    studentId: "1234567890",
+    parentId: "parentId1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "3",
+    roleName: "student",
+    studentId: "1234567890", // Reference to a Student
+    adminId: "2",
+    teacherId: "1234567890",
+    parentId: "parentId1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "4",
+    roleName: "parent",
+    parentId: "parentId1", // Reference to a Parent
+    adminId: "1",
+    studentId: "1234567890",
+    teacherId: "1234567890",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
 
 export const teachersData = [
   {

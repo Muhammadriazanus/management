@@ -8,7 +8,7 @@ import {
   SubjectSchema,
   TeacherSchema,
 } from "./formValidationSchemas";
-import prisma from "./prisma";
+import prisma from "./db"
 import { clerkClient } from "@clerk/nextjs/server";
 
 type CurrentState = { success: boolean; error: boolean };

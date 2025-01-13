@@ -8,9 +8,17 @@ datasource db {
 }
 
 model Admin {
-  id       String @id
-  username String @unique
+  id        String      @id 
+  username  String   @unique
+  email     String?  @unique
+  password  String
+  roles     String
+  refreshToken String?
+  createdAt DateTime @default(now())
+
 }
+
+
 
 model Student {
   id          String       @id
@@ -21,7 +29,7 @@ model Student {
   phone       String?      @unique
   address     String
   img         String?
-  bloodType   String
+  bloodtype   String
   sex         UserSex
   createdAt   DateTime     @default(now())
   parentId    String
@@ -44,7 +52,7 @@ model Teacher {
   phone     String?   @unique
   address   String
   img       String?
-  bloodType String
+  bloodtype String
   sex       UserSex
   createdAt DateTime  @default(now())
   subjects  Subject[]
@@ -118,7 +126,7 @@ model Exam {
   title     String
   startTime DateTime
   endTime   DateTime
-
+  
   lessonId Int
   lesson   Lesson   @relation(fields: [lessonId], references: [id])
   results  Result[]
