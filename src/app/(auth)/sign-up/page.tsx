@@ -8,7 +8,7 @@ export default function SignUp() {
         username: "",
         password: "",
         email: "",
-        role: "admin", // or 'admin'
+        roles: "", // or 'admin'
     });
 
     const handleChange = (e: any) => {
@@ -17,7 +17,7 @@ export default function SignUp() {
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        const res = await fetch("http://localhost:3001/page/auth/api/user", { // Updated URL
+        const res = await fetch("/page/api/user", { // Updated URL
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
@@ -28,7 +28,7 @@ export default function SignUp() {
 
         if (res.ok) {
             // alert("Signup successful!");
-            router.push(`/userpage`);
+            router.push(`/dashboarduser`);
         } else {
             alert("Signup failed.");
         }
@@ -79,20 +79,19 @@ export default function SignUp() {
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         />
                     </div>
-
+                    {/* roles */}
                     <div>
-                        <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                            Role
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                            roles
                         </label>
-                        <select
-                            name="role"
+                        <input
+                            type="roles"
+                            name="roles"
+                            placeholder="Enter your roles"
                             onChange={handleChange}
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="">Admin</option>
-                        </select>
+                        />
                     </div>
-
                     <button
                         type="submit"
                         className="w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"

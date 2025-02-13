@@ -3,7 +3,7 @@ import Announcements from "@/components/Announcements";
 import BigCalendarContainer from "@/components/BigCalendarContainer";
 import prisma from "@/lib/db";
 
-const ParentPage = async (context: any) => {
+const ParentPage = async () => {
   const id = context.params.id;
   
   // Assuming you're looking for the first match; using findFirst instead of findMany.

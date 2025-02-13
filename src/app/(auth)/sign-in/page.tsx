@@ -11,6 +11,7 @@ const FormSchema = z.object({
 export default function SignIn() {
     const [error, setError] = useState<string | null>(null); // State for error messages
     const [loading, setLoading] = useState(false); // State for loading status
+    const [tokenpass , settokenPass] = useState(false)
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,7 +36,7 @@ export default function SignIn() {
         setLoading(true); // Start loading
 
         try {
-            const response = await fetch("http://localhost:3001/page/auth/api/sigin-in", {
+            const response = await fetch("http://localhost:3000/page/auth/api/sigin-in", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -54,7 +55,7 @@ export default function SignIn() {
                 console.log("Login successful:", result);
                 localStorage.setItem("token", result.token)
                 
-                router.push("/userpage"); 
+                router.push("/dashboarduser"); 
             } else {
                 setError(result.error || "An error occurred");
             }

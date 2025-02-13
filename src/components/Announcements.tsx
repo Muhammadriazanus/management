@@ -6,9 +6,9 @@ const Announcements = async () => {
   const role = (sessionClaims?.metadata as { role?: string })?.role;
 
   const roleConditions = {
-    teacher: { lessons: { some: { teacherId: userId! } } },
+    teacher: { lessons: { some: { teacher_id: userId! } } },
     student: { students: { some: { id: userId! } } },
-    parent: { students: { some: { parentId: userId! } } },
+    parent: { students: { some: { parent_id: userId! } } },
   };
 
   const data = await prisma.announcement.findMany({
@@ -17,7 +17,7 @@ const Announcements = async () => {
     where: {
       ...(role !== "admin" && {
         OR: [
-          { classId: null },
+          { class_id: null },
           { class: roleConditions[role as keyof typeof roleConditions] || {} },
         ],
       }),

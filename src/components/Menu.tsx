@@ -10,6 +10,7 @@ const Menu: FC<MenuProps> = ({ userRole }) => {
       title: "MENU",
       items: [
         { icon: "/home.png", label: "Home", href: "/dashboarduser", visible: ["admin", "teacher", "student", "parent"] },
+        { icon: "/home.png", label: "admin", href: "/list/admins", visible: ["admin", "teacher", "student", "parent"] },
         { icon: "/teacher.png", label: "Teachers", href: "/allteacherdata", visible: ["admin", "teacher"] },
         { icon: "/student.png", label: "Students", href: "/allstudentrecords", visible: ["admin", "teacher"] },
         { icon: "/parent.png", label: "Parents", href: "/list/allparentrecords", visible: ["admin", "teacher"] },
@@ -19,10 +20,13 @@ const Menu: FC<MenuProps> = ({ userRole }) => {
         { icon: "/exam.png", label: "Exams", href: "/list/allexamdetails", visible: ["admin", "teacher", "student", "parent"] },
         { icon: "/assignment.png", label: "Assignments", href: "/list/assi", visible: ["admin", "teacher", "student", "parent"] },
         { icon: "/result.png", label: "Results", href: "/list/resultsall", visible: ["admin", "teacher", "student", "parent"] },
-        { icon: "/attendance.png", label: "Attendance", href: "/list/attendance", visible: ["admin", "teacher", "student", "parent"] },
+        { icon: "/attendance.png", label: "AttendenceAll", href: "/list/AttendenceAll", visible: ["admin", "teacher", "student", "parent"] },
         { icon: "/calendar.png", label: "Events", href: "/list/event", visible: ["admin", "teacher", "student", "parent"] },
         { icon: "/message.png", label: "Messages", href: "/list/messages", visible: ["admin", "teacher", "student", "parent"] },
         { icon: "/announcement.png", label: "Announcements", href: "/list/allannouncementforstudent", visible: ["admin", "teacher", "student", "parent"] },
+        { icon: "/", label: "AskedMe", href: "/AskedMe", visible: ["admin", "teacher", "student", "parent"] },
+        { icon: "/", label: "chatbot", href: "/list/chatbot", visible: ["admin", "teacher", "student", "parent"] },
+        { icon: "/", label: "adminfrom", href: "/list/adminfrom", visible: ["admin", "teacher", "student", "parent"] },
       ],
     },
   ];

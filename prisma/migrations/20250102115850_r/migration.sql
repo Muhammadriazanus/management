@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Admin" ALTER COLUMN "roles" SET NOT NULL,
-ALTER COLUMN "roles" SET DATA TYPE TEXT;

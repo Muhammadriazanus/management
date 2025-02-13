@@ -1,141 +1,127 @@
-import FormContainer from "@/components/FormContainer";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
-import TableSearch from "@/components/TableSearch";
-import prisma from "@/lib/db";
-import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Parent, Prisma, Student } from "@prisma/client";
-import Image from "next/image";
+"use client";
 
-import { auth } from "@clerk/nextjs/server";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-type ParentList = Parent & { students: Student[] };
+interface Parent {
+  id: string;
+  username: string;
+  name: string;
+  surname: string;
+  email: string;
+  phone: string;
+  address: string;
+  tenant_id : number
+}
 
-const ParentListPage = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | undefined };
-}) => {
+interface AskedMe {
+  id: string;
+  question: string;
+  search_text: string;
+  startTime: string;
+  endTime: string;
+}
 
-const { sessionClaims } = auth();
-const role = (sessionClaims?.metadata as { role?: string })?.role;
+const ParentListPage = () => {
+  const [parentData, setParentData] = useState<Parent[]>([]);
+  const [askedMeData, setAskedMeData] = useState<AskedMe[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [parent_id ,setParentId] = useState<any>(null)
 
-
-const columns = [
-  {
-    header: "Info",
-    accessor: "info",
-  },
-  {
-    header: "Student Names",
-    accessor: "students",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Phone",
-    accessor: "phone",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "Address",
-    accessor: "address",
-    className: "hidden lg:table-cell",
-  },
-  ...(role === "admin"
-    ? [
-        {
-          header: "Actions",
-          accessor: "action",
-        },
-      ]
-    : []),
-];
-
-const renderRow = (item: ParentList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
-  >
-    <td className="flex items-center gap-4 p-4">
-      <div className="flex flex-col">
-        <h3 className="font-semibold">{item.name}</h3>
-        <p className="text-xs text-gray-500">{item?.email}</p>
-      </div>
-    </td>
-    <td className="hidden md:table-cell">
-      {item.students.map((student) => student.name).join(",")}
-    </td>
-    <td className="hidden md:table-cell">{item.phone}</td>
-    <td className="hidden md:table-cell">{item.address}</td>
-    <td>
-      <div className="flex items-center gap-2">
-        {role === "admin" && (
-          <>
-            <FormContainer table="parent" type="update" data={item} />
-            <FormContainer table="parent" type="delete" id={item.id} />
-          </>
-        )}
-      </div>
-    </td>
-  </tr>
-);
-
-  const { page, ...queryParams } = searchParams;
-
-  const p = page ? parseInt(page) : 1;
-
-  // URL PARAMS CONDITION
-
-  const query: Prisma.ParentWhereInput = {};
-
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "search":
-            query.name = { contains: value, mode: "insensitive" };
-            break;
-          default:
-            break;
-        }
+  useEffect(() => {
+    const fetchParentDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("/page/api/Getparent");
+        console.log("Parent data fetched:", response.data);
+        setParentData(response.data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching parent data:", err);
+        setError("Failed to fetch parent data. Please try again.");
+      } finally {
+        setLoading(false);
       }
-    }
-  }
+    };
 
-  const [data, count] = await prisma.$transaction([
-    prisma.parent.findMany({
-      where: query,
-      include: {
-        students: true,
-      },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
-    }),
-    prisma.parent.count({ where: query }),
-  ]);
+    const fetchAskedMeData = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/page/api/GetAskedMe");
+        console.log("AskedMe data fetched:", response.data);
+        setAskedMeData(response.data);
+      } catch (err) {
+        console.error("Error fetching AskedMe data:", err);
+      }
+    };
+
+    fetchAskedMeData();
+    fetchParentDetails();
+  }, []);
+  useEffect(() => {
+    const fetchDataParentId = async(parent_id:string)=>{
+    try {
+        const response = await axios.get(`/page/api/Getparent?parent_id=${parent_id}`)
+        setParentData(response.data)
+      }catch(err){
+      console.log("🚀 ~ fetchDataParentId ~ err:", err)
+      }
+    fetchDataParentId(parent_id)
+    }
+  }, [parent_id])
+
+
+
+  if (loading) return <p className="text-center text-gray-500">Loading...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      {/* TOP */}
-      <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">All Parents</h1>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <TableSearch />
-          <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/filter.png" alt="" width={14} height={14} />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/sort.png" alt="" width={14} height={14} />
-            </button>
-            {role === "admin" && <FormContainer table="parent" type="create" />}
-          </div>
-        </div>
+    <div className="p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Parent and AskedMe Data</h2>
+      <div className="overflow-x-auto flex">
+        <table className="w-full border-collapse border border-gray-300 rounded-lg">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">id</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">Username</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">Name</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">Surname</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">Phone</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">Email</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">Address</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">Question</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">Search Text</th>
+              {/* <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">Start Time</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border border-gray-300">End Time</th> */}
+            </tr>
+          </thead>
+          <tbody>
+            {parentData.map((parent, index) => {
+              const asked = askedMeData[index] || {};
+              return (
+                <tr key={parent.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">{parent.id}</td>
+                  <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">{parent.username}</td>
+                  <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">{parent.name}</td>
+                  <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">{parent.surname}</td>
+                  <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">{parent.phone}</td>
+                  <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">{parent.email}</td>
+                  <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">{parent.address}</td>
+                  <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">{asked.question}</td>
+                  <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">{asked.search_text}</td>
+                  {/* Uncomment if needed */}
+                  {/* <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">-</td>
+      <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">-</td>
+      <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">-</td>
+      <td className="px-4 py-3 text-sm text-gray-800 border border-gray-300">-</td> */}
+                </tr>
+              );
+            })}
+
+
+          </tbody>
+        </table>
       </div>
-      {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={data} />
-      {/* PAGINATION */}
-      <Pagination page={p} count={count} />
     </div>
   );
 };

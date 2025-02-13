@@ -1,9 +1,32 @@
-import { UserButton } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs/server";
+"use client";
+import axios from "axios";
+import { METHODS } from "http";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { string } from "zod";
+// import { useEffect } from "react";
 
-const Navbar = async () => {
-  const user = await currentUser();
+const Navbar = () => {
+  const [logoutUser , setLogoutUser] = useState<any>(null)
+  const router = useRouter()
+  const handlelogout = ()=>{
+
+  }
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post("/page/auth/api/logout",{method : "POST"});
+      localStorage.removeItem("token")
+      console.log("🚀 ~ handleLogout ~ response:", response.data)
+      setLogoutUser(response.data)
+      
+      alert("Logged out successfully");
+      router.push("/sign-in")
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+
   return (
     <div className="flex items-center justify-between p-4">
       {/* SEARCH BAR */}
@@ -27,13 +50,10 @@ const Navbar = async () => {
           </div>
         </div>
         <div className="flex flex-col">
-          <span className="text-xs leading-3 font-medium">John Doe</span>
-          <span className="text-[10px] text-gray-500 text-right">
-            {user?.publicMetadata?.role as string}
-          </span>
+       {/* <span className="text-xs leading-3 font-medium">{logoutUser.user.username}</span>  */}
         </div>
-        {/* <Image src="/avatar.png" alt="" width={36} height={36} className="rounded-full"/> */}
-        <UserButton />
+          <button onClick={handleLogout} className="text-black-500">Logout</button>
+        
       </div>
     </div>
   );

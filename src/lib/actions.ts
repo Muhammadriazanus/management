@@ -97,6 +97,7 @@ export const createClass = async (
   }
 };
 
+
 export const updateClass = async (
   currentState: CurrentState,
   data: ClassSchema
@@ -160,7 +161,7 @@ export const createTeacher = async (
         phone: data.phone || null,
         address: data.address,
         img: data.img || null,
-        bloodType: data.bloodType,
+        bloodtype: data.bloodType,
         sex: data.sex,
         birthday: data.birthday,
         subjects: {
@@ -207,7 +208,7 @@ export const updateTeacher = async (
         phone: data.phone || null,
         address: data.address,
         img: data.img || null,
-        bloodType: data.bloodType,
+        bloodtype: data.bloodType,
         sex: data.sex,
         birthday: data.birthday,
         subjects: {
@@ -280,7 +281,7 @@ export const createStudent = async (
         phone: data.phone || null,
         address: data.address,
         img: data.img || null,
-        bloodType: data.bloodType,
+        bloodtype: data.bloodType,
         sex: data.sex,
         birthday: data.birthday,
         gradeId: data.gradeId,
@@ -325,7 +326,7 @@ export const updateStudent = async (
         phone: data.phone || null,
         address: data.address,
         img: data.img || null,
-        bloodType: data.bloodType,
+        bloodtype: data.bloodType,
         sex: data.sex,
         birthday: data.birthday,
         gradeId: data.gradeId,
@@ -431,6 +432,7 @@ export const updateExam = async (
         startTime: data.startTime,
         endTime: data.endTime,
         lessonId: data.lessonId,
+        // tenant_Id : data.tenant_Id
       },
     });
 

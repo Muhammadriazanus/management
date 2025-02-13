@@ -6,14 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate:create" :"prisma migrate dev --create-only",
+    "migrate:prod" : "prisma migrate deploy",
+    "seed" : "node prisma/seed.ts"
   },
   "dependencies": {
     "@clerk/elements": "^0.14.6",
     "@clerk/nextjs": "^5.7.5",
+    "@google/generative-ai": "^0.21.0",
     "@hookform/resolvers": "^3.9.0",
     "@prisma/client": "^6.2.1",
     "@types/react-big-calendar": "^1.8.9",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cookie": "^1.0.2",

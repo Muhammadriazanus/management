@@ -1,210 +1,63 @@
+"use client";
 
-import FormContainer from "@/components/FormContainer";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import prisma from "@/lib/db";
-import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Prisma } from "@prisma/client";
 import Image from "next/image";
-
-import { auth } from "@clerk/nextjs/server";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 type ResultList = {
   id: number;
-  title: string;
-  studentName: string;
-  studentSurname: string;
-  teacherName: string;
-  teacherSurname: string;
-  score: number;
-  className: string;
-  startTime: Date;
+  score: string;
+  exam: { title: string };
+  assignment: { title: string };
+  student: { name: string };
 };
 
+interface AskedMe {
+  id: string;
+  question: string;
+  search_text: string;
+  startTime: string;
+  endTime: string;
+}
 
-const ResultListPage = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | undefined };
-}) => {
+const ResultPage = () => {
+  const [resultData, setResultData] = useState<ResultList[]>([]);
+  const [askedMeData, setAskedMeData] = useState<AskedMe[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const { userId, sessionClaims } = auth();
-const role = (sessionClaims?.metadata as { role?: string })?.role;
-const currentUserId = userId;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [resultResponse, askedMeResponse] = await Promise.all([
+          axios.get("/page/auth/api/result"),
+          axios.get("http://localhost:3000/page/auth/api/GetAskedMe"),
+        ]);
 
-
-const columns = [
-  {
-    header: "Title",
-    accessor: "title",
-  },
-  {
-    header: "Student",
-    accessor: "student",
-  },
-  {
-    header: "Score",
-    accessor: "score",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Teacher",
-    accessor: "teacher",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Class",
-    accessor: "class",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Date",
-    accessor: "date",
-    className: "hidden md:table-cell",
-  },
-  ...(role === "admin" || role === "teacher"
-    ? [
-        {
-          header: "Actions",
-          accessor: "action",
-        },
-      ]
-    : []),
-];
-
-const renderRow = (item: ResultList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
-  >
-    <td className="flex items-center gap-4 p-4">{item.title}</td>
-    <td>{item.studentName + " " + item.studentName}</td>
-    <td className="hidden md:table-cell">{item.score}</td>
-    <td className="hidden md:table-cell">
-      {item.teacherName + " " + item.teacherSurname}
-    </td>
-    <td className="hidden md:table-cell">{item.className}</td>
-    <td className="hidden md:table-cell">
-      {new Intl.DateTimeFormat("en-US").format(item.startTime)}
-    </td>
-    <td>
-      <div className="flex items-center gap-2">
-        {(role === "admin" || role === "teacher") && (
-          <>
-            <FormContainer table="result" type="update" data={item} />
-            <FormContainer table="result" type="delete" id={item.id} />
-          </>
-        )}
-      </div>
-    </td>
-  </tr>
-);
-
-  const { page, ...queryParams } = searchParams;
-
-  const p = page ? parseInt(page) : 1;
-
-  // URL PARAMS CONDITION
-
-  const query: Prisma.ResultWhereInput = {};
-
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "studentId":
-            query.studentId = value;
-            break;
-          case "search":
-            query.OR = [
-              { exam: { title: { contains: value, mode: "insensitive" } } },
-              { student: { name: { contains: value, mode: "insensitive" } } },
-            ];
-            break;
-          default:
-            break;
-        }
+        setResultData(resultResponse.data);
+        setAskedMeData(askedMeResponse.data);
+      } catch (err) {
+        setError("Failed to fetch data");
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false);
       }
-    }
-  }
-
-  // ROLE CONDITIONS
-
-  switch (role) {
-    case "admin":
-      break;
-    case "teacher":
-      query.OR = [
-        { exam: { lesson: { teacherId: currentUserId! } } },
-        { assignment: { lesson: { teacherId: currentUserId! } } },
-      ];
-      break;
-
-    case "student":
-      query.studentId = currentUserId!;
-      break;
-
-    case "parent":
-      query.student = {
-        parentId: currentUserId!,
-      };
-      break;
-    default:
-      break;
-  }
-
-  const [dataRes, count] = await prisma.$transaction([
-    prisma.result.findMany({
-      where: query,
-      include: {
-        student: { select: { name: true, surname: true } },
-        exam: {
-          include: {
-            lesson: {
-              select: {
-                class: { select: { name: true } },
-                teacher: { select: { name: true, surname: true } },
-              },
-            },
-          },
-        },
-        assignment: {
-          include: {
-            lesson: {
-              select: {
-                class: { select: { name: true } },
-                teacher: { select: { name: true, surname: true } },
-              },
-            },
-          },
-        },
-      },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
-    }),
-    prisma.result.count({ where: query }),
-  ]);
-
-  const data = dataRes.map((item) => {
-    const assessment = item.exam || item.assignment;
-
-    if (!assessment) return null;
-
-    const isExam = "startTime" in assessment;
-
-    return {
-      id: item.id,
-      title: assessment.title,
-      studentName: item.student.name,
-      studentSurname: item.student.surname,
-      teacherName: assessment.lesson.teacher.name,
-      teacherSurname: assessment.lesson.teacher.surname,
-      score: item.score,
-      className: assessment.lesson.class.name,
-      startTime: isExam ? assessment.startTime : assessment.startDate,
     };
-  });
+
+    fetchData();
+  }, []);
+
+  const findAskedMe = (id: number) =>
+    askedMeData.find((item) => item.id === id.toString());
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
@@ -215,23 +68,83 @@ const renderRow = (item: ResultList) => (
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/filter.png" alt="" width={14} height={14} />
+              <Image src="/filter.png" alt="Filter" width={14} height={14} />
             </button>
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/sort.png" alt="" width={14} height={14} />
+              <Image src="/sort.png" alt="Sort" width={14} height={14} />
             </button>
-            {(role === "admin" || role === "teacher") && (
-              <FormContainer table="result" type="create" />
-            )}
           </div>
         </div>
       </div>
-      {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={data} />
-      {/* PAGINATION */}
-      <Pagination page={p} count={count} />
+
+      {/* TABLE */}
+      <table className="min-w-full border border-gray-200 rounded-lg my-4">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">
+              Score
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">
+              Exam Title
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">
+              Assignment Title
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">
+              Student Name
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">
+              Question
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">
+              Search Text
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {resultData.length === 0 ? (
+            <tr>
+              <td
+                colSpan={6}
+                className="px-6 py-4 text-sm text-gray-700 border-b text-center"
+              >
+                No results available.
+              </td>
+            </tr>
+          ) : (
+            resultData.map((item) => {
+              const asked = findAskedMe(item.id) || {};
+              return (
+                <tr
+                  key={item.id}
+                  className="hover:bg-gray-50 transition duration-200 ease-in-out"
+                >
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                    {item.score}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                    {item.exam?.title}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                    {item.assignment?.title}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                    {item.student?.name}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                    {asked?.question || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b">
+                    {asked?.search_text || "N/A"}
+                  </td>
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
 
-export default ResultListPage;
+export default ResultPage;
