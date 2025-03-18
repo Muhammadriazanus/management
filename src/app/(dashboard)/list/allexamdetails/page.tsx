@@ -22,6 +22,15 @@ interface AskedMe {
   end_time: string;
   tenant_id: number
 }
+interface ColorThememodel {
+  primary: String;
+  secondary: String;
+  background: String;
+  surface: String;
+  text: String;
+  color: String
+  border: String
+}
 
 interface TableSearchProps {
   searchText: string;
@@ -33,6 +42,7 @@ interface TableSearchProps {
 const ExamListPage = () => {
   const [examsData, setExamsData] = useState<ExamList[]>([]);
   const [askedMeData, setAskedMeData] = useState<AskedMe[]>([]);
+  const [ColorTheme, setColorTheme] = useState<ColorThememodel[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [searchType, setSearchType] = useState<"title" | "lesson">("title");
   const [lesson_id, setLessonId] = useState<any>(null);
@@ -40,7 +50,7 @@ const ExamListPage = () => {
   useEffect(() => {
     const fetchExamData = async () => {
       try {
-        const response = await axios.get("/page/api/Exam");
+        const response = await axios.get("/api/v1/Exam");
         setExamsData(response.data);
       } catch (error) {
         console.error("Error fetching exam data:", error);
@@ -53,7 +63,7 @@ const ExamListPage = () => {
   useEffect(() => {
     const fetchAskedMeData = async () => {
       try {
-        const response = await axios.get("/page/api/GetAskedMe");
+        const response = await axios.get("/api/v1/GetAskedMe");
         setAskedMeData(response.data);
       } catch (err) {
         console.error("Error fetching AskedMe data:", err);
@@ -78,7 +88,19 @@ const ExamListPage = () => {
     fetchLessonData(lesson_id);
 
   }, [lesson_id]);
-
+  useEffect(() => {
+    const ColorThemes = async () => {
+      try {
+        const response = await axios.get('/api/v1/colormodel')
+        console.log("🚀 ~ ColorThemes ~ response:", response.data)
+        // console.log(response.data);
+        setColorTheme(response.data)
+      } catch (error) {
+        console.log("🚀 ~ ColorThemes ~ error:", error)
+      }
+    }
+    ColorThemes()
+  }, [])
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
@@ -106,7 +128,7 @@ const ExamListPage = () => {
       {/* TABLE */}
       <table className="min-w-full border border-gray-200 rounded-lg my-4">
         <thead>
-          <tr className="bg-gray-100">
+          <tr className="bg-gray-100" style={{ backgroundColor: ColorTheme[0]?.text as string }}>
             {[
               "Title",
               "tenant_id",
@@ -117,7 +139,7 @@ const ExamListPage = () => {
             ].map((header) => (
               <th
                 key={header}
-                className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b"
+                className="px-6 py-3 text-left text-sm font-medium  uppercase border-b text-white"
               >
                 {header}
               </th>
@@ -129,12 +151,12 @@ const ExamListPage = () => {
             const asked = askedMeData[index] || {};;
             return (
               <tr key={exam.id} className="hover:bg-gray-50 transition duration-200 ease-in-out">
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{exam.title}</td>
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{exam.tenant_id}</td>
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{exam.lesson.name}</td>
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{exam.lesson_id}</td>
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{asked.question || "N/A"}</td>
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{asked.search_text || "N/A"}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{exam.title}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{exam.tenant_id}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{exam.lesson.name}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{exam.lesson_id}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{asked.question || "N/A"}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{asked.search_text || "N/A"}</td>
               </tr>
             );
           })}

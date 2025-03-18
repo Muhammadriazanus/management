@@ -1,7 +1,7 @@
 "use client";
 
 import TableSearch from "@/components/TableSearch";
-import Image from "next/image";
+import  from "next/";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -39,10 +39,10 @@ const AttendenceListPage = () => {
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/filter.png" alt="Filter" width={14} height={14} />
+              < src="/filter.png" alt="Filter" width={14} height={14} />
             </button>
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/sort.png" alt="Sort" width={14} height={14} />
+              < src="/sort.png" alt="Sort" width={14} height={14} />
             </button>
           </div>
         </div>

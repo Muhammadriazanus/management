@@ -1,9 +1,10 @@
 "use client";
 
-import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
-import { use, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import axios from "axios";
+
+import ThemeContext from "@/components/context/themeContext";
 
 type AnnouncementList = {
   id: number;
@@ -12,7 +13,7 @@ type AnnouncementList = {
   date: string;
   lessonId: number;
   class: { name: string };
-  class_id : number
+  class_id: number
 };
 interface AskedMe {
   id: string;
@@ -25,12 +26,15 @@ interface AskedMe {
 const AnnouncementListPage = () => {
   const [AnnouncementData, setAnnouncementData] = useState<AnnouncementList[]>([]);
   const [askedMeData, setAskedMeData] = useState<AskedMe[]>([]);
+  // const [ColorTheme, setColorTheme] = useState<ColorThememodel[]>([]);
   const [class_id, setClassId] = useState<any>(null)
+  const theme = useContext(ThemeContext) 
+  console.log("🚀 ~ AnnouncementListPage ~ theme:", theme)
 
   useEffect(() => {
     const fetchAnnouncementData = async () => {
       try {
-        const response = await axios.get("/page/api/getAnnouncement");
+        const response = await axios.get("/api/v1/getAnnouncement");
         console.log("🚀 ~ Announcement Data Response:", response.data);
         setAnnouncementData(response.data); // Update state with fetched data
       } catch (error) {
@@ -39,7 +43,7 @@ const AnnouncementListPage = () => {
     };
     const fetchAskedMeData = async () => {
       try {
-        const response = await axios.get("/page/api/GetAskedMe");
+        const response = await axios.get("/api/v1/GetAskedMe");
         console.log("AskedMe data fetched:", response.data);
         setAskedMeData(response.data);
       } catch (err) {
@@ -53,7 +57,7 @@ const AnnouncementListPage = () => {
     // localhost:3000/page/auth/api/getAnnouncement?classId=1
     const fetchDataforclassId = async (class_id: number) => {
       try {
-        const response = await axios.get(`/page/api/getAnnouncement?class_id=${class_id}`)
+        const response = await axios.get(`/api/v1/getAnnouncement?class_id=${class_id}`)
         console.log("🚀 ~ fetchDataforclassId ~ response:", response)
         setAnnouncementData(response.data)
       } catch (error) {
@@ -63,13 +67,26 @@ const AnnouncementListPage = () => {
     fetchDataforclassId(class_id)
 
   }, [class_id])
+
+  // useEffect(() => {
+  //   const ColorThemes = async () => {
+  //     try {
+  //       const response = await axios.get('/page/api/colormodel')
+  //       console.log("🚀 ~ ColorThemes ~ response:", response.data)
+  //       // console.log(response.data);
+  //       setColorTheme(response.data)
+  //     } catch (error) {
+  //       console.log("🚀 ~ ColorThemes ~ error:", error)
+  //     }
+  //   }
+  //   ColorThemes()
+  // }, [])
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">All Announcement</h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          {/* <TableSearch /> */}
           <input
             type="number"
             placeholder="Please search the class Id"
@@ -91,26 +108,25 @@ const AnnouncementListPage = () => {
       {/* TABLE */}
       <table className="min-w-full border border-gray-200 rounded-lg my-4">
         <thead>
-          <tr className="bg-gray-100">
-            {/* <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">title</th> */}
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">description</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">date</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">class</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">class Id</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Question</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Search Text</th>
-            {/* <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Lesson ID</th> */}
+          <tr className="bg-gray-100" style={{ backgroundColor: theme[0]?.text as string }}>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">description</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">date</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">class</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">class Id</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">Question</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">Search Text</th>
+
           </tr>
         </thead>
         <tbody>
           {AnnouncementData.map((item, index) => (
             <tr key={index} className="hover:bg-gray-50 transition duration-200 ease-in-out">
-              <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.title}</td>
-              <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.description}</td>
-              <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.class.name}</td>
-              <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.class_id}</td>
-              <td className="px-6 py-4 text-sm text-gray-700 border-b">{askedMeData[index]?.question ?? 'N/A'}</td>
-              <td className="px-6 py-4 text-sm text-gray-700 border-b">{askedMeData[index]?.search_text ?? 'N/A'}</td>
+              <td className="px-6 py-4 text-sm text-gray-700 border-b border-none" style={{ backgroundColor: theme[0]?.primary as string }}>{item.title}</td>
+              <td className="px-6 py-4 text-sm text-gray-700 border-b border-none" style={{ backgroundColor: theme[0]?.primary as string }}>{item.description}</td>
+              <td className="px-6 py-4 text-sm text-gray-700 border-b border-none" style={{ backgroundColor: theme[0]?.primary as string }}>{item.class.name}</td>
+              <td className="px-6 py-4 text-sm text-gray-700 border-b border-none" style={{ backgroundColor: theme[0]?.primary as string }}>{item.class_id}</td>
+              <td className="px-6 py-4 text-sm text-gray-700 border-b border-none" style={{ backgroundColor: theme[0]?.primary as string }}>{askedMeData[index]?.question ?? 'N/A'}</td>
+              <td className="px-6 py-4 text-sm text-gray-700 border-b border-none" style={{ backgroundColor: theme[0]?.primary as string }}>{askedMeData[index]?.search_text ?? 'N/A'}</td>
             </tr>
           ))}
 

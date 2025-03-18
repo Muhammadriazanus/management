@@ -11,7 +11,8 @@ const AdminForm = () => {
         slug: "",
         logo_url: "",
         default_language_code: "",
-        status: ""
+        status: "",
+        value_text : ""
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,18 +21,32 @@ const AdminForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validate required fields
+        if (!formData.name || !formData.slug || !formData.logo_url || !formData.default_language_code || !formData.status) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+
         try {
-            const response = await axios.post("/page/api/v1/tenants", formData);
-            console.log(response.data);
+            // Send POST request to the server
+            const response = await axios.post("/api/v1/tenantadmin", formData, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            console.log("response.data", response.data);
 
             if (response.status === 201 || response.status === 200) {
                 router.push(`/list/admins`);
             } else {
-                alert("Signup failed.");
+                alert(`Error: ${response.statusText || "Unknown Error"}`);
             }
         } catch (error) {
             console.error("Error submitting form:", error);
-            alert("Signup failed.");
+            alert("Signup failed. Please try again.");
         }
     };
 
@@ -96,7 +111,6 @@ const AdminForm = () => {
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         />
                     </div>
-
                     <div>
                         <label htmlFor="status" className="block text-sm font-medium text-gray-700">
                             Status
@@ -110,6 +124,22 @@ const AdminForm = () => {
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         />
                     </div>
+                    <div>
+                        <label htmlFor="value_text" className="block text-sm font-medium text-gray-700">
+                        value_text
+                        </label>
+                        <input
+                            type="text"
+                            name="value_text"
+                            placeholder="Enter status"
+                            onChange={handleChange}
+                            value={formData.value_text}
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        />
+                    </div>
+
+
+
 
                     <button
                         type="submit"

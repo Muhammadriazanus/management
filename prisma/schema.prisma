@@ -40,6 +40,7 @@ model Student {
   grade       Grade        @relation(fields: [grade_id], references: [id])
   attendances Attendance[]
   results     Result[]
+  studentFees StudentFee[]
   birthday    DateTime
 }
 
@@ -208,24 +209,170 @@ model Tenant {
   logo_url                 String
   default_language_code    String
   status                   String
+  value_text               String
+  color_theme              ColorTheme
+  img_url                  String
+  super_admin_id           Int?
+  super_admin              SuperAdmin? @relation(fields: [super_admin_id], references: [id])
   created_at               DateTime @default(now())
   updated_at               DateTime @updatedAt
-  @@map("MDS_TENANT")
+  @@map("MDS_TENANT") 
+}
+
+model SuperAdmin {
+  id              Int      @id @default(autoincrement()) 
+  super_admin     Boolean
+  tenants         Tenant[]
+
+  @@map("SUPER_ADMIN") 
+}
+
+model RegisterSchool {
+  id           Int      @id @default(autoincrement())
+  name         String
+  teacher      String
+  address      String
+  phone_number String
+  
+  created_at   DateTime @default(now())
+  @@map("REGISTOR_SCHOOL")
+}
+model  Notification_services{
+
+  id               Int      @id @default(autoincrement())
+  tenant_id        Int  
+  recipient_id     Int
+  recipient_type   String
+  template_id      Int
+  placeholders     String
+  language         String
+  template_content String
+  status           Status
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("NOTIFICATION_SERVICES")
+}
+
+model Template_Notification {
+  id               Int      @id @default(autoincrement())
+  tenant_id        Int
+  slug             String
+  name             String
+  description      String
+  placeholders     String
+  content          String
+  status           Status
+  created_on       DateTime @default(now())
+  created_by       Int      // ya String agar user ID string hai
+  updated_on       DateTime @updatedAt
+  updated_by       Int?
+  deleted_on       DateTime?
+  deleted_by       Int?
+  @@map("TEMPLATE_NOTIFICATION")
+}
+model Color_Model {
+  id              Int      @id @default(autoincrement())
+  tenant_id       Int      @unique
+  primary         String   
+  secondary       String
+  background      String
+  color           String
+  surface         String
+  text            String
+  border          String  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@map("COLOR_MODEL")
+}
+model FeeCategory {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  fees  FeeStructure[]
+  @@map("FEE_CATEGORY")
+}
+
+model FeeStructure {
+  id          Int          @id @default(autoincrement())
+  categoryId  Int
+  category    FeeCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  classes     String      // e.g., "Grade 1", "Grade 2"
+  amount      Decimal     // Fee amount
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  studentFees StudentFee[]
+  @@map("FEE_STRUCTURE")
+}
+model StudentFee {
+  id          Int          @id @default(autoincrement())
+  studentId   String
+  student     Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feeId       Int
+  fee         FeeStructure @relation(fields: [feeId], references: [id], onDelete: Cascade)
+  status      FeeStatus    @default(PENDING)
+  dueDate     DateTime
+  payments    Payment[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  @@map("STUDENT_FEE")
+}
+
+model Payment {
+  id          Int          @id @default(autoincrement())
+  studentFeeId Int
+  studentFee  StudentFee @relation(fields: [studentFeeId], references: [id])
+  amount      String
+  paymentDate DateTime    @default(now())
+  method      PaymentMethod
+  @@map("PAYMENT")
+}
+model Currency {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique // Currency name (e.g., US Dollar, Euro)
+  code      String  @unique // Currency code (e.g., USD, EUR)
+  symbol    String? // Optional symbol (e.g., $, €)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("CURRENCY_CONVERTOR")
 }
 
 
-
-
-
+enum ColorTheme {   
+  LIGHT
+  DARK
+  BLUE
+  GREEN
+  RED 
+  GRAY
+  YELLOW
+  ORANGE
+  WHITE
+}
 enum UserSex {
   MALE
   FEMALE
 }
-
+enum  Status{
+   PENDING 
+   ACTIVE 
+   INACTIVE
+}
 enum Day {
   MONDAY
   TUESDAY
   WEDNESDAY
   THURSDAY
   FRIDAY
+}
+
+enum FeeStatus {
+  PAID
+  PENDING
+  OVERDUE
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  ONLINE
 }

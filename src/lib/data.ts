@@ -1249,8 +1249,15 @@ export const tenants = [
     slug :  "hello",
     logo_url : "www.example.com",
     default_language_code :  "javascript",
+    super_admin_id : 1,
     status   : "ACTIVE"  
   }
 ]
+export const SuperAdmin = [
+  {
+      
+  }
+]
+
 
 

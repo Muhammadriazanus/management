@@ -21,6 +21,15 @@ interface AskedMe {
   start_time: string;
   end_time: string;
 }
+interface ColorThememodel {
+  primary: String;
+  secondary: String;
+  background: String;
+  surface: String;
+  text: String;
+  color: String
+  border: String
+}
 interface TableSearchProps {
   searchText: string;
   setSearchText: Dispatch<SetStateAction<string>>;
@@ -30,6 +39,7 @@ interface TableSearchProps {
 const ClassListPage = () => {
   const [classData, setClassData] = useState<ClassList[]>([]);
   const [askedMeData, setAskedMeData] = useState<AskedMe[]>([]);
+  const [ColorTheme, setColorTheme] = useState<ColorThememodel[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [searchType, setSearchType] = useState<"name">("name");
 
@@ -37,7 +47,7 @@ const ClassListPage = () => {
   useEffect(() => {
     const fetchClassData = async () => {
       try {
-        const response = await axios.get('/page/api/class');
+        const response = await axios.get('/api/v1/class');
         setClassData(response.data);
       } catch (error) {
         console.error(error);
@@ -46,7 +56,7 @@ const ClassListPage = () => {
 
     const fetchAskedMeData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/page/api/GetAskedMe");
+        const response = await axios.get("http://localhost:3000/api/v1/GetAskedMe");
         setAskedMeData(response.data);
       } catch (err) {
         console.error("Error fetching AskedMe data:", err);
@@ -56,7 +66,19 @@ const ClassListPage = () => {
     fetchClassData();
     fetchAskedMeData();
   }, []);
-
+  useEffect(() => {
+    const ColorThemes = async () => {
+      try {
+        const response = await axios.get('/api/v1/colormodel')
+        console.log("🚀 ~ ColorThemes ~ response:", response.data)
+        // console.log(response.data);
+        setColorTheme(response.data)
+      } catch (error) {
+        console.log("🚀 ~ ColorThemes ~ error:", error)
+      }
+    }
+    ColorThemes()
+  }, [])
 
   const filteredClassa = classData.filter((classes) =>
     [classes.name, classes.capacity, classes.supervisor_id, classes.tenant_id]
@@ -92,15 +114,15 @@ const ClassListPage = () => {
 
         <table className="min-w-full border border-gray-200 rounded-lg my-4">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="bg-gray-100" style={{ backgroundColor: ColorTheme[0]?.text as string }}>
               {/* <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Class Id</th> */}
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Name</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Tenant_Id</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Capacity</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Supervisor Id</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Grade Level</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Question</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Search Text</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">Name</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">Tenant_Id</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">Capacity</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">Supervisor Id</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">Grade Level</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">Question</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase border-b">Search Text</th>
             </tr>
           </thead>
           <tbody>
@@ -110,13 +132,13 @@ const ClassListPage = () => {
               return (
                 <tr key={item.id} className="hover:bg-gray-50 transition duration-200 ease-in-out">
                   {/* <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.id}</td> */}
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.tenant_id}</td>
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.capacity}</td>
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.supervisor_id}</td>
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.grade.level}</td>
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">{asked.question || "N/A"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-700 border-b">{asked.search_text || "N/A"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{item.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{item.tenant_id}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{item.capacity}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{item.supervisor_id}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{item.grade.level}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{asked.question || "N/A"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{asked.search_text || "N/A"}</td>
                 </tr>
               );
             })}

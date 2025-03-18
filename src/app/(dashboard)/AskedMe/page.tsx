@@ -10,13 +10,22 @@ interface AskedMe {
     start_time: string;
     end_time: string;
 }
-
+interface ColorThememodel {
+    primary: String;
+    secondary: String;
+    background: String;
+    surface: String;
+    text: String;
+    color: String
+    border: String
+}
 const SearchTable = () => {
     const [askedMeData, setAskedMeData] = useState<AskedMe[]>([]);
+    const [ColorTheme, setColorTheme] = useState<ColorThememodel[]>([]);
     useEffect(() => {
         const AskedMeDataInput = async () => {
             try {
-                const respone = await axios.get('http://localhost:3000/page/auth/api/GetAskedMe')
+                const respone = await axios.get('/page/api/GetAskedMe')
                 console.log("🚀 ~ AskedMeDataInput ~ respone:", respone.data)
                 setAskedMeData(respone.data)
 
@@ -27,9 +36,23 @@ const SearchTable = () => {
         }
         AskedMeDataInput()
     }, [])
+
+    useEffect(() => {
+        const ColorThemes = async () => {
+            try {
+                const response = await axios.get('/page/api/colormodel')
+                console.log("🚀 ~ ColorThemes ~ response:", response.data)
+                // console.log(response.data);
+                setColorTheme(response.data)
+            } catch (error) {
+                console.log("🚀 ~ ColorThemes ~ error:", error)
+            }
+        }
+        ColorThemes()
+    }, [])
     return (
-        <div>
-            <div className="flex items-center justify-between">
+        <div style={{ backgroundColor: ColorTheme[0]?.surface as string }}>
+            <div className="flex items-center justify-between text-white">
                 <h1 className="hidden md:block text-lg font-semibold ml-4">All Attendance</h1>
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                     <TableSearch />
@@ -45,20 +68,20 @@ const SearchTable = () => {
             </div>
             <table className="min-w-full border border-gray-200 rounded-lg my-4">
                 <thead>
-                    <tr className="bg-gray-100">
-                        <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Question</th>
-                        <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">SearchText</th>
-                        <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">End Time</th>
-                        <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Start Time</th>
+                    <tr className="bg-gray-100" style={{ backgroundColor: ColorTheme[0]?.text as string, border: ColorTheme[0]?.border as string }}>
+                        <th className="px-6 py-3 text-left text-sm font-medium text-white  uppercase border-b">Question</th>
+                        <th className="px-6 py-3 text-left text-sm font-medium text-white  uppercase border-b">SearchText</th>
+                        <th className="px-6 py-3 text-left text-sm font-medium text-white  uppercase border-b">End Time</th>
+                        <th className="px-6 py-3 text-left text-sm font-medium text-white  uppercase border-b">Start Time</th>
                     </tr>
                 </thead>
                 <tbody>
                     {askedMeData.map((item, id) => (
                         <tr key={id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.question}</td>
-                            <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.search_text}</td>
-                            <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.start_time}</td>
-                            <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.end_time}</td>
+                            <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string , border:ColorTheme[0]?.border as string}}>{item.question}</td>
+                            <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string , border:ColorTheme[0]?.border as string}}>{item.search_text}</td>
+                            <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string , border:ColorTheme[0]?.border as string}}>{item.start_time}</td>
+                            <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string , border:ColorTheme[0]?.border as string}}>{item.end_time}</td>
                         </tr>
                     ))}
                 </tbody>

@@ -10,12 +10,20 @@ interface adminsUser {
     slug: String;
     logo_url: string;
     default_language_code: String;
-    status: String
+    status: String,
+    super_admin_id: string
+}
+
+interface configuration {
+    color_theme: string
+    img_url: string
+    value_text: string
 }
 
 const AdminPage = () => {
     // const [lessonId, setLessonId] = useState("");
     const [admin, setUserAdmin] = useState<adminsUser[]>([])
+    const [configuration, setconfiguration] = useState<configuration[]>([])
     useEffect(() => {
         const adminUser = async () => {
             const response = await axios.get("/page/api/tenant")
@@ -23,6 +31,16 @@ const AdminPage = () => {
             setUserAdmin(response.data)
         }
         adminUser()
+
+    }, [])
+    useEffect(() => {
+        const adminConfiguration = async () => {
+            const response = await axios.get("/page/api/confrigrations")
+            console.log("=================?response.data", response.data)
+            setUserAdmin(response.data)
+        }
+        adminConfiguration()
+        
     }, [])
 
     return (
@@ -31,16 +49,6 @@ const AdminPage = () => {
             <div className="flex items-center justify-between">
                 <h1 className="hidden md:block text-lg font-semibold">ADMIN ACCESS</h1>
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-
-                    {/* 
-        //     <input
-        //       type="number"
-        //       placeholder="Enter Lesson ID"
-        //       className="py-2 px-2 border rounded outline-none"
-        //       value={lessonId}
-        //       onChange={(e) => setLessonId(e.target.value)}
-        //     />
-        //     */}
                     <div className="flex items-center gap-4 self-end">
                         <button className="w-8 h-8 flex items-center justify-center rounded-full bg-yellow-400">
                             <Image src="/filter.png" alt="Filter" width={14} height={14} />

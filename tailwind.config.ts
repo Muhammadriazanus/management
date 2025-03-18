@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
-
+import { Color_Model } from "@prisma/client";
+import { Surface } from "recharts";
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -25,4 +26,19 @@ const config: Config = {
   },
   plugins: [],
 };
+
+
+
+export function generateTailwindTheme(color_Model: Color_Model) {
+  return {
+    primary: color_Model.primary,
+    secondary: color_Model.secondary,
+    background: color_Model.background,
+    text: color_Model.text,
+    Surface: color_Model.surface,
+    border: color_Model.border,
+    tenant_id: color_Model.tenant_id
+  };
+}
+
 export default config;

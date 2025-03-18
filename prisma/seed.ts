@@ -1,7 +1,8 @@
 import { askedMe, role } from "@/lib/data";
-import { Day, PrismaClient, UserSex } from "@prisma/client";
-import { parentsData } from "@/lib/data";
+import { Day, PrismaClient, UserSex, ColorTheme } from "@prisma/client";
+// import { parentsData } from "@/lib/data";
 const prisma = new PrismaClient();
+
 
 async function main() {
   // ADMIN
@@ -182,18 +183,7 @@ async function main() {
     });
   }
 
-  // ATTENDANCE
-  // for (let i = 1; i <= 10; i++) {
-  //   await prisma.attendance.create({
-  //     data: {
-  //       tenant_Id: i,
-  //       date: new Date(),
-  //       present: true,
-  //       studentId: `student${i}`,
-  //       lessonId: (i % 30) + 1,
-  //     },
-  //   });
-  // }
+
   for (let i = 1; i <= 10; i++) {
     await prisma.attendance.create({
       data: {
@@ -251,19 +241,120 @@ async function main() {
       },
     });
   }
-
   for (let i = 1; i <= 2; i++) {
+    await prisma.superAdmin.create({
+      data: {
+        super_admin: false,
+      },
+    });
+  }
+  for (let i = 1; i <= 1; i++) {
+    await prisma.color_Model.create({
+      data: {
+        tenant_id: i,
+        primary: "#4CAF50",
+        secondary: "#FFC107",
+        background: "#4CAF50",
+        color: "#FFFFFF",
+        surface: "#FFFFFF",
+        text: "#333333",
+        border: "#E0E0E0"
+      }
+    })
+  }
+  const colors = Object.values(ColorTheme) as ColorTheme[];
+  for (let i = 1; i <= 1; i++) {
+    const randomColor = colors[Math.floor(Math.random() * colors.length)]
     await prisma.tenant.create({
       data: {
-        name: `name${i}`,
-        slug : `Description for  ${i}`,
-        logo_url : `www.${i}.com`,
-        default_language_code : `default_language_code${i}`,
-        status : "ACTIVE",
+        name: `anas${i}`,
+        slug: `Description for  anas`,
+        logo_url: `www.${i}.com`,
+        default_language_code: `default_language_code`,
+        status: "teacher",
+        super_admin_id: i,
+        value_text: `value_text for user`,
+        color_theme: randomColor,
+        img_url: `https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg${i}`,
       },
     });
   }
 
+
+  // const colors = Object.values(ColorTheme) as ColorTheme[];
+
+  // for (let i = 1; i <= 1; i++) {
+  //   const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+  //   await prisma.configuration.create({
+  //     data: {
+
+  //       color_theme: randomColor, 
+  //       tenant_id: i,
+
+  //     },
+  //   });
+  // }
+  for (let i = 1; i <= 1; i++) {
+    await prisma.registerSchool.create({
+      data: {
+        name: `bahira Model school${i}`,
+        teacher: `muhammad anas ${i}`,
+        address: `nazimabad no ${i}`,
+        phone_number: `03422155047${i}`
+      },
+    });
+  }
+  for (let i = 1; i <= 1; i++) {
+    await prisma.feeCategory.create({
+      data: {
+        name: `Anas${i}`,
+      },
+    });
+  }
+  
+  for (let i = 1; i <= 1; i++) {
+    await prisma.feeStructure.create({
+      data: {
+        categoryId: i,
+        classes: `X${i}`,
+        amount: `400${i}`,
+      },
+    });
+  }
+  
+  // Pehle StudentFee create karein
+  for (let i = 1; i <= 1; i++) {
+    await prisma.studentFee.create({
+      data: {
+        feeId: i, // Ensure this fee structure exists
+        studentId: "student1", // Ensure this student exists
+        status: `OVERDUE`,
+        dueDate: new Date(),
+      },
+    });
+  }
+  
+  // Ab Payment create karein (kyunki ab studentFeeId available hai)
+  for (let i = 1; i <= 1; i++) {
+    await prisma.payment.create({
+      data: {
+        studentFeeId: i, // Ab ye foreign key valid hogi
+        amount: `${i}`,
+        paymentDate: new Date(),
+        method: `BANK_TRANSFER`,
+      },
+    });
+  }
+  
+  // for (let i = 1; i <= 1; i++) {
+  //   await prisma.user.create({
+  //     data: {
+  //       name : `${name}`,
+  //       img :   ""
+  //     }
+  //   })
+  // }
 
   console.log("Seeding completed successfully.");
 }

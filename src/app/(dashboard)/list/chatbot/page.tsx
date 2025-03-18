@@ -23,6 +23,7 @@ export default function Chatbot() {
           resolve();
         }
       }, delay);
+      console.log("🚀 ~ interval ~ interval:", interval)
     });
   };
 
@@ -35,6 +36,7 @@ export default function Chatbot() {
       text: prompt,
       timestamp: new Date().toLocaleTimeString(),
     };
+    console.log("🚀 ~ handleSubmit ~ userMessage:", userMessage)
     // setMessages((prev) => [...prev, userMessage]);
     setPrompt("");
     setIsLoading(true);
@@ -45,13 +47,15 @@ export default function Chatbot() {
         ...prev,
         { type: "bot", text: "Typing...", timestamp: "" },
       ]);
-
-      const res = await axios.post("http://localhost:3000/page/auth/api/chatbot", {
+      // call api for respone 
+      const res = await axios.post("http://localhost:3000/page/api/chatbot", {
         prompt,
         history: messages.map(({ type, text }) => ({ role: type, content: text })), // Send history to backend
       });
-
+      console.log("🚀 ~ handleSubmit ~ res:", res)
+      // bot response
       const botResponse = res.data.text || "I'm not sure how to respond.";
+      console.log("🚀 ~ handleSubmit ~ botResponse:", botResponse)
       await simulateTyping(botResponse);
 
       setMessages((prev) => [
@@ -70,6 +74,7 @@ export default function Chatbot() {
   };
 
   const quickReplies = ["Can you elaborate?", "What do you mean?", "Tell me more"];
+  console.log("🚀 ~ Chatbot ~ quickReplies:", quickReplies)
 
   return (
     <div className="h-screen bg-gray-100 flex flex-col items-center p-6">

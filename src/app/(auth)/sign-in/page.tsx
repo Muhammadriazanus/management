@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import * as z from "zod";
+import Image from "next/image";
+import ThemeContext from "@/components/context/themeContext";
 const FormSchema = z.object({
     username: z.string().min(1, "Username is required"),
     password: z.string().min(1, "Password is required"),
 });
 
 export default function SignIn() {
+    const theme = useContext(ThemeContext)
+    console.log("🚀 ~ theme:", theme)
     const [error, setError] = useState<string | null>(null); // State for error messages
     const [loading, setLoading] = useState(false); // State for loading status
     const [tokenpass , settokenPass] = useState(false)
@@ -36,7 +40,7 @@ export default function SignIn() {
         setLoading(true); // Start loading
 
         try {
-            const response = await fetch("http://localhost:3000/page/auth/api/sigin-in", {
+            const response = await fetch("http://localhost:3000/api/v1/sigin-in", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -68,15 +72,17 @@ export default function SignIn() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="min-h-screen flex items-center justify-center bg-gray-100" style={{background : theme[0]?.text as string}}>
             <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="flex justify-center">
+                    <Image   src="/asset/becanhouseSchool.png" alt="Filter" width={100} height={14} />
+                    </div>
                     <h1 className="text-2xl font-bold text-center text-gray-800">Sign In</h1>
 
                     {error && (
                         <p className="text-sm text-red-500 text-center">{error}</p>
                     )}
-
                     <div>
                         <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                             Username

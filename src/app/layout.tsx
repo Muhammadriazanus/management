@@ -4,8 +4,8 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import SignUp from "./(auth)/sign-up/page";
-// import AuthWrapper from "@/components/AuthWrapper";
+import { ThemeProvider } from "@/components/context/themeContext"; 
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,15 +21,14 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={inter.className}>
-          {/* Wrap only the children that need authentication */}
-          {children}
-          {/* <SignUp /> */}
-          {/* Toast notifications */}
-          <ToastContainer position="bottom-right" theme="dark" />
-        </body>
-      </html>
+      <ThemeProvider>
+        <html lang="en">
+          <body className={inter.className}>
+            {children}
+            <ToastContainer position="bottom-right" theme="dark" />
+          </body>
+        </html>
+      </ThemeProvider>
     </ClerkProvider>
   );
 }

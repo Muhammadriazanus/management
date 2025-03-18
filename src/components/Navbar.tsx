@@ -10,13 +10,13 @@ import { string } from "zod";
 const Navbar = () => {
   const [logoutUser , setLogoutUser] = useState<any>(null)
   const router = useRouter()
-  const handlelogout = ()=>{
+//  logout button
 
-  }
   const handleLogout = async () => {
     try {
-      const response = await axios.post("/page/auth/api/logout",{method : "POST"});
+      const response = await axios.post("/api/v1/logout",{method : "POST"});
       localStorage.removeItem("token")
+      console.log("🚀 ~ handleLogout ~ response:", response.data)
       console.log("🚀 ~ handleLogout ~ response:", response.data)
       setLogoutUser(response.data)
       
@@ -26,6 +26,7 @@ const Navbar = () => {
       console.error("Logout failed", error);
     }
   };
+  
 
   return (
     <div className="flex items-center justify-between p-4">

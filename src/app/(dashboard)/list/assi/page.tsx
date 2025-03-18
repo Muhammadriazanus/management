@@ -8,7 +8,7 @@ import { assignmentsData } from "@/lib/data";
 
 type AssignmentList = {
   id: number;
-  tenant_id : number
+  tenant_id: number
   title: string;
   start_date: string;
   due_date: string;
@@ -23,6 +23,16 @@ interface AskedMe {
   startTime: string;
   endTime: string;
 }
+
+interface ColorThememodel {
+  primary: String;
+  secondary: String;
+  background: String;
+  surface: String;
+  text: String;
+  color: String
+  border: String
+}
 interface TableSearchProps {
   searchText: string;
   setSearchText: Dispatch<SetStateAction<string>>;
@@ -33,6 +43,7 @@ interface TableSearchProps {
 const AssignmentPage = () => {
   const [Assigment, setAssigment] = useState<AssignmentList[]>([]);
   const [askedMeData, setAskedMeData] = useState<AskedMe[]>([]);
+  const [ColorTheme, setColorTheme] = useState<ColorThememodel[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [searchType, setSearchType] = useState<"title" | "lesson">("title");
   const [lesson_id, setlessonId] = useState<any>(null)
@@ -41,7 +52,7 @@ const AssignmentPage = () => {
   useEffect(() => {
     const fetchAssigementData = async () => {
       try {
-        const response = await axios.get("/page/api/assigments");
+        const response = await axios.get("/api/v1/assigments");
         console.log("🚀 ~ Exam Data Response:", response.data);
         setAssigment(response.data); // Update state with fetched data
       } catch (error) {
@@ -50,7 +61,7 @@ const AssignmentPage = () => {
     };
     const fetchAskedMeData = async () => {
       try {
-        const response = await axios.get("/page/api/GetAskedMe");
+        const response = await axios.get("/api/v1/GetAskedMe");
         console.log("AskedMe data fetched:", response.data);
         setAskedMeData(response.data);
       } catch (err) {
@@ -58,27 +69,39 @@ const AssignmentPage = () => {
       }
     };
 
-    
+
     fetchAskedMeData();
     fetchAssigementData();
   }, []);
 
   // lesson Id to fatch data
-useEffect(()=>{
-  const fetchAssignmentBylessonId = async (lesson_id: number) => {
-    try {
-      const response = await axios.get(`/page/api/assigments?lesson_id=${lesson_id}`)
+  useEffect(() => {
+    const fetchAssignmentBylessonId = async (lesson_id: number) => {
+      try {
+        const response = await axios.get(`/api/v1/assigments?lesson_id=${lesson_id}`)
 
-      setAssigment(response.data)
-      console.log("🚀 ~ fetchAssignment fro lesson ID ~ response:", response.data)
-    } catch (error) {
-      console.log("🚀 ~ fetchAssignment ~ error:", error)
+        setAssigment(response.data)
+        console.log("🚀 ~ fetchAssignment fro lesson ID ~ response:", response.data)
+      } catch (error) {
+        console.log("🚀 ~ fetchAssignment ~ error:", error)
+      }
     }
-  }
-  fetchAssignmentBylessonId(lesson_id)
-},[lesson_id])
-
-
+    fetchAssignmentBylessonId(lesson_id)
+  }, [lesson_id])
+// color changes with the help of api backend
+  useEffect(() => {
+    const ColorThemes = async () => {
+      try {
+        const response = await axios.get('/api/v1/colormodel')
+        console.log("🚀 ~ ColorThemes ~ response:", response.data)
+        // console.log(response.data);
+        setColorTheme(response.data)
+      } catch (error) {
+        console.log("🚀 ~ ColorThemes ~ error:", error)
+      }
+    }
+    ColorThemes()
+  }, [])
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
@@ -107,18 +130,13 @@ useEffect(()=>{
       {/* TABLE */}
       <table className="min-w-full border border-gray-200 rounded-lg my-4">
         <thead>
-          <tr className="bg-gray-100">
-            {/* <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Exam ID</th> */}
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Title</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">tenant_id</th>
-
-            {/* <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Start Date</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">dueDate</th> */}
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Lesson Name</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Lesson Id</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Question</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase border-b">Search Text</th>
-
+          <tr className="bg-gray-100" style={{ backgroundColor: ColorTheme[0]?.text as string }}>
+            <th className="px-6 py-3 text-left text-sm font-medium  uppercase border-b text-white" >Title</th>
+            <th className="px-6 py-3 text-left text-sm font-medium  uppercase border-b text-white ">tenant_id</th>
+            <th className="px-6 py-3 text-left text-sm font-medium  uppercase border-b text-white">Lesson Name</th>
+            <th className="px-6 py-3 text-left text-sm font-medium  uppercase border-b text-white">Lesson Id</th>
+            <th className="px-6 py-3 text-left text-sm font-medium  uppercase border-b text-white">Question</th>
+            <th className="px-6 py-3 text-left text-sm font-medium  uppercase border-b text-white">Search Text</th>
           </tr>
         </thead>
         <tbody>
@@ -126,18 +144,15 @@ useEffect(()=>{
             const asked = askedMeData[index] || {}; // This should be inside a block
             return (
               <tr key={item.id} className="hover:bg-gray-50 transition duration-200 ease-in-out">
-                {/* <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.id}</td> */}
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.title}</td>
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.tenant_id}</td>
-                {/* <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.startDate}</td>
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.dueDate}</td> */}
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.lesson.name}</td>
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{item.lesson_id}</td>
-                {/* Optionally display question and searchText from askedMeData */}
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{asked.question || "N/A"}</td>
-                <td className="px-6 py-4 text-sm text-gray-700 border-b">{asked.search_text || "N/A"}</td>
+
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{item.title}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{item.tenant_id}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{item.lesson.name}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{item.lesson_id}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{asked.question || "N/A"}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-b" style={{ backgroundColor: ColorTheme[0]?.primary as string, color: ColorTheme[0]?.color as string }}>{asked.search_text || "N/A"}</td>
               </tr>
-            );
+            )
           })}
 
         </tbody>

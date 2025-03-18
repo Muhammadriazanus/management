@@ -1,0 +1,8 @@
+-- DropForeignKey
+ALTER TABLE "MDS_TENANT" DROP CONSTRAINT "MDS_TENANT_super_admin_id_fkey";
+
+-- AlterTable
+ALTER TABLE "MDS_TENANT" ALTER COLUMN "super_admin_id" DROP NOT NULL;
+
+-- AddForeignKey
+ALTER TABLE "MDS_TENANT" ADD CONSTRAINT "MDS_TENANT_super_admin_id_fkey" FOREIGN KEY ("super_admin_id") REFERENCES "SUPER_ADMIN"("id") ON DELETE SET NULL ON UPDATE CASCADE;
