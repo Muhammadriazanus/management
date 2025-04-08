@@ -36,6 +36,7 @@ const Menu: FC<MenuProps> = ({ userRole }) => {
         { icon: "/", label: "schooldetails", href: "/list/schooldetails", visible: ["admin", "teacher", "student", "parent"] },
         { icon: "/", label: "superadmin", href: "/list/superadmin", visible: ["admin", "teacher", "student", "parent"] },
         { icon: "/", label: "superadmindetails", href: "/list/superadmindetails", visible: ["admin", "teacher", "student", "parent"] },
+        { icon: "/", label: "payment", href: "/list/payment", visible: ["admin", "teacher", "student", "parent"] },
       ],
     },
   ];

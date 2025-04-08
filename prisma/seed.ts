@@ -1,5 +1,7 @@
 import { askedMe, role } from "@/lib/data";
 import { Day, PrismaClient, UserSex, ColorTheme } from "@prisma/client";
+import { Prisma } from '@prisma/client';
+
 // import { parentsData } from "@/lib/data";
 const prisma = new PrismaClient();
 
@@ -335,17 +337,16 @@ async function main() {
     });
   }
   
-  // Ab Payment create karein (kyunki ab studentFeeId available hai)
   for (let i = 1; i <= 1; i++) {
     await prisma.payment.create({
       data: {
-        studentFeeId: i, // Ab ye foreign key valid hogi
-        amount: `${i}`,
+        studentFeeId: 1, // Foreign key valid honi chahiye
+        amount: new Prisma.Decimal("500.00"), // ✅ Correct conversion
         paymentDate: new Date(),
-        method: `BANK_TRANSFER`,
+        method: "BANK_TRANSFER",
       },
     });
-  }
+}
   
   // for (let i = 1; i <= 1; i++) {
   //   await prisma.user.create({

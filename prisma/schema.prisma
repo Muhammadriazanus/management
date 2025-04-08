@@ -321,7 +321,7 @@ model Payment {
   id          Int          @id @default(autoincrement())
   studentFeeId Int
   studentFee  StudentFee @relation(fields: [studentFeeId], references: [id])
-  amount      String
+  amount      Decimal
   paymentDate DateTime    @default(now())
   method      PaymentMethod
   @@map("PAYMENT")

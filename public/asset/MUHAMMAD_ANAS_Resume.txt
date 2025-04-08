@@ -1,0 +1,92 @@
+MUHAMMAD ANAS
+
+Karachi Pakistan
+03422155047
+riazanus568@gmail.com
+
+Websites, Portfolios, Profiles
+
+LinkedIn
+GitHub
+
+Education
+
+January 2022
+Saylani Mass IT Training Program Karachi, Pakistan
+Certification 
+
+Expected in November 2025
+University of Karachi (UBIT) Karachi, Pakistan
+BS Software Engineering
+Expected Graduation: 2025
+
+April 2021
+SM Science College Karachi, Pakistan
+Pre-Engineering 
+
+Professional Summary
+
+Undergraduate Software Engineering student at the University of Karachi (UBIT) with a passion for web development and backend technologies. Skilled in Next.js, JavaScript, Prisma, and Redis, with experience in building user authorization systems and optimizing databases. Adept at creating scalable and secure applications.
+
+Skills
+
+HTML
+
+CSS
+
+JavaScript
+
+React.js
+
+Next.js
+
+Node.js
+
+Express.js
+
+MongoDB
+
+PostgreSQL
+
+Prisma
+
+GitHub
+
+Mongo db
+
+Work History
+
+November 2024 - Current
+
+Virtuosoft - Karachi, Pakistan
+MERN STACK DEVELOPER    
+
+Company Overview: A software development company specializing in educational technology solutions
+Developed Tutor Nest, an online tutoring management system designed to connect students, teachers, and parents seamlessly
+Implemented real-time communication, session scheduling, and user role management
+Built using Next.js, TypeScript, Prisma, and Redis, ensuring scalability and performance
+Designed a multi-tenant architecture using database isolation and role-based access control (RBAC), ensuring secure and efficient data management for multiple institutions
+A software development company specializing in educational technology solutions
+
+August 2024 - September 2024
+
+K-ELECTRIC - Karachi, Pakistan
+MERN STACK DEVELOPER INTERN    
+
+Company Overview: A leading electric utility company in Karachi
+Developed a user authorization application using React.js, Express.js, and MongoDB, implementing role-based access control (RBAC)
+Contributed to UI enhancements and front-end optimizations for internal company applications
+Collaborated with the backend team to integrate dynamic components and enhance user experience using Express.js
+Focused on scalability, security, and efficient database management
+A leading electric utility company in Karachi
+
+March 2024 - July 2024
+
+VLD Solution - Karachi, Pakistan
+FRONT-END DEVELOPER    
+
+Company Overview: A web development company specializing in travel and hospitality
+Engineered an innovative travel website featuring intuitive navigation and eye-catching visuals, leading to a 40% increase in user engagement within the first month of launch
+Implemented a responsive design ensuring smooth functionality across mobile and desktop devices
+Focused on engaging users with soft colors, elegant typography, and effective call-to-action buttons
+A web development company specializing in travel and hospitality
